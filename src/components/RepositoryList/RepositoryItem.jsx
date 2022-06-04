@@ -1,5 +1,5 @@
-import { Text, View, Image, StyleSheet } from "react-native";
-import theme from "../theme";
+import { Text, View, Image, StyleSheet, I18nManager } from "react-native";
+import theme from "../../theme";
 
 const styles = StyleSheet.create({
   container: {
@@ -8,12 +8,12 @@ const styles = StyleSheet.create({
   },
   header: {
     display: 'flex',
-    flexDirection: 'row-reverse'
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row'
   },
   imageContainer: {
     marginTop: 5,
-    marginLeft: 20,
-    marginRight: 10
+    marginLeft: 10,
+    marginRight: 20
   },
   image: {
     width: 65,
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   textContainer: {
-    flexDirection: 'row-reverse',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     flex: 1,
     flexWrap: 'wrap',
     flexShrink: 1
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   body: {
     display: 'flex',
-    flexDirection: 'row-reverse',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     justifyContent: 'space-around',
     marginVertical: 30,
   },

@@ -1,9 +1,9 @@
 import { View, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import theme from '../theme';
 import AppBar from './AppBar';
 import RepositoryList from './RepositoryList'
 import SignIn from './SignIn'
-import theme from '../theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +38,7 @@ const Main = () => {
       <Stack.Screen name="SignIn" >
         {({navigation}) => (
           <Page navigation={navigation}>
-            <SignIn />
+            <SignIn navigation={navigation} />
           </Page>
         )}
       </Stack.Screen>

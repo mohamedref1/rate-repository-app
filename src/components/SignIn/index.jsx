@@ -2,7 +2,9 @@ import { Formik } from "formik";
 import * as yup from 'yup'
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import FormikTextInput from "./FormikTextInput";
-import theme from "../theme";
+import theme from "../../theme";
+import useSignIn from "../../hooks/useSignIn";
+import { useState } from "react";
 
 const styles = StyleSheet.create({
   container: {
@@ -31,17 +33,35 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.large,
     fontWeight: theme.fontWeighs.bold,
     textAlign: 'center'
+  },
+  submitErrorContainer: {
+    margin: 6,
+    marginBottom: 20
+  },
+  submitErrorText: {
+    color: theme.colors.danger,
+    fontSize: theme.fontSize.heading
   }
 })
 
-const SignIn = () => {
+const SignIn = ({navigation}) => {
+  const [submitError, setSubmitError] = useState(null);
+  const [signIn] = useSignIn();
+
   const initialValues = {
     username: '',
     password: ''
   }
 
-  const onSubmit = (values) => {
-    console.log(values)
+  const onSubmit = async (values) => {
+    const {username, password} = values;
+
+    try {
+      await signIn({ username, password })
+      navigation.navigate('Repositories')
+    } catch (err) {
+      setSubmitError(err.message)
+    }
   }
 
   const validationSchema = yup.object().shape({
@@ -62,6 +82,13 @@ const SignIn = () => {
       >
         {({handleSubmit}) => (
           <View>
+            {submitError 
+              ? (
+                <View style={styles.submitErrorContainer}>
+                  <Text style={styles.submitErrorText}>{submitError}</Text>
+                </View>
+              )
+              : null}
             <View style={styles.fieldContainer}>
               <FormikTextInput 
                 name='username' 
