@@ -1,6 +1,7 @@
 import { useField } from "formik";
 import { StyleSheet, Text, TextInput } from "react-native";
-import theme from "../../theme";
+
+import theme from "../theme";
 
 const styles = StyleSheet.create({
   error: {
@@ -8,7 +9,6 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.heading,
     marginTop: 12,
     marginRight: 6,
-
   }
 });
 

@@ -1,10 +1,17 @@
+import { useState } from "react";
+import { useMutation } from "@apollo/client";
+import { useNavigation } from "@react-navigation/native";
 import { Formik } from "formik";
 import * as yup from 'yup'
 import { Pressable, StyleSheet, Text, View } from "react-native";
+
+import { SIGN_UP } from "../graphql/mutations";
+import useSignIn from "../hooks/useSignIn";
+import theme from "../theme";
+import pages from '../pages'
+
 import FormikTextInput from "./FormikTextInput";
-import theme from "../../theme";
-import useSignIn from "../../hooks/useSignIn";
-import { useState } from "react";
+
 
 const styles = StyleSheet.create({
   container: {
@@ -44,33 +51,28 @@ const styles = StyleSheet.create({
   }
 })
 
-const SignIn = ({navigation}) => {
-  const [submitError, setSubmitError] = useState(null);
-  const [signIn] = useSignIn();
-
+export const SignUpFormContainer = ({ onSubmit, submitError }) => {
   const initialValues = {
     username: '',
-    password: ''
-  }
-
-  const onSubmit = async (values) => {
-    const {username, password} = values;
-
-    try {
-      await signIn({ username, password })
-      navigation.navigate('Repositories')
-    } catch (err) {
-      setSubmitError(err.message)
-    }
+    password: '',
+    passwordConfirmation: '',
   }
 
   const validationSchema = yup.object().shape({
     username: yup
       .string()
-      .required('Username is required'),
+      .required('Username is required')
+      .min(1, 'Username must be at least 1 character')
+      .max(30, 'Username can be at most 30 character'),
     password: yup
       .string()
       .required('Password is required')
+      .min(5, 'Username must be at least 5 character')
+      .max(50, 'Username can be at most 50 character'),
+    passwordConfirmation: yup
+      .string()
+      .required('Password confirmation is required')
+      .oneOf([yup.ref('password'), null], 'Passwords don\'t match')
   })
   
   return (
@@ -99,7 +101,15 @@ const SignIn = ({navigation}) => {
             <View style={styles.fieldContainer}>
               <FormikTextInput 
                 name='password' 
-                placeholder='password'
+                placeholder='Password'
+                style={styles.field}
+                secureTextEntry
+              />
+            </View>
+            <View style={styles.fieldContainer}>
+              <FormikTextInput 
+                name='passwordConfirmation' 
+                placeholder='Password Confirmation'
                 style={styles.field}
                 secureTextEntry
               />
@@ -108,13 +118,47 @@ const SignIn = ({navigation}) => {
               onPress={handleSubmit}
               style={[styles.field, styles.pressable]}
             >
-              <Text style={styles.pressableText}>Sing In</Text>
+              <Text style={styles.pressableText}>Sign up</Text>
             </Pressable>
           </View>
         )}
       </Formik>
     </View>
-    );
+  );
+}
+
+const SignUpForm = () => {
+  const [submitError, setSubmitError] = useState(null);
+  const [signUp] = useMutation(SIGN_UP);
+  const [signIn] = useSignIn();
+  const navigation = useNavigation()
+
+  const onSubmit = async (values) => {
+    const {username, password} = values;
+
+    try {
+      await signUp({
+        variables: {
+          user: {
+            username,
+            password
+          }
+        }
+      })
+      await signIn({ username, password })
+      navigation.navigate(pages.repositories.name)
+    } catch (err) {
+      setSubmitError(err.message)
+    }
+  }
+
+  
+  return (
+    <SignUpFormContainer 
+      onSubmit={onSubmit} 
+      submitError={submitError} 
+    />
+  )
 };
 
-export default SignIn;
+export default SignUpForm;

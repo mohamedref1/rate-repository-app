@@ -1,4 +1,5 @@
-const { useMutation, useApolloClient } = require("@apollo/client");
+import { useMutation, useApolloClient } from "@apollo/client";
+
 import useAuthStorage from "../hooks/useAuthStorage";
 import { SIGN_IN } from "../graphql/mutations";
 
